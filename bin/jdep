@@ -1,0 +1,18 @@
+#!/bin/bash
+
+src=${HOME}/src/jdep
+if [ -d ${src} ]
+then
+ jarf=${src}/jdep.jar
+ if [ -f ${jarf} ]
+ then
+  java -jar ${jarf} $*
+ else
+  echo config error in ${jarf}
+  exit 1
+ fi
+else
+ echo config error in ${src}
+ exit 1
+fi
+ 

@@ -1,0 +1,105 @@
+#!/bin/bash
+#
+# See
+#  http://www.cslab.pepperdine.edu/warford/BatchIndentationEmacs.html
+#
+
+wd=$(dirname $0)
+el=${wd}/emacs-indent.el
+
+function Usage {
+    cat<<EOF >&2
+Usage
+  $0 [--style style] files
+
+Description
+
+  Employ emacs in batch mode to indent files according
+  to 'style' (default 'cc-mode').
+
+EOF
+    exit 1
+}
+
+function WriteEl {
+    if [ -n "${1}" ]
+    then
+	style=$1
+    else
+	style="cc-mode"
+    fi
+
+    cat<<EOF >${el}
+(defun emacs-format-function ()
+   "Format the whole buffer."
+   (c-set-style "${style}")
+   (indent-region (point-min) (point-max) nil)
+   (untabify (point-min) (point-max))
+   (save-buffer)
+)
+EOF
+}
+
+writeStyle=false
+count=0
+
+for file in $*
+do
+    case ${file} in
+	--style)
+	    writeStyle=true
+	    ;;
+	*)
+	    if $writeStyle
+	    then
+		if [ -f "${file}" ]
+		then
+		    Usage
+		else
+		    writeStyle=false
+		    if WriteEl ${file}
+		    then
+			count=$(( $count + 1 ))
+			continue
+		    else
+			cat<<EOF >&2
+Error writing script file '${el}'.
+EOF
+			exit 1
+		    fi
+		fi
+	    else
+		if [ ! -f ${el} ]
+		then
+		    if ! WriteEl
+		    then
+			cat<<EOF >&2
+Error writing script file '${el}'.
+EOF
+			exit 1
+		    fi
+		fi
+		if [ -f $file ]
+		then
+		    if emacs -batch $file -l ${el} -f emacs-format-function
+		    then
+			count=$(( $count + 1 ))
+			printf "\t%s\n" $(wc -l $file | sed 's/  / /g; s/ /:/')
+			continue
+		    else
+			exit 1
+		    fi
+		else
+		    Usage
+		fi
+	    fi
+	    ;;
+    esac
+done
+
+if [ 0 -eq $count ]
+then
+    Usage
+else
+    exit 0
+fi

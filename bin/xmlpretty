@@ -1,0 +1,13 @@
+#!/bin/bash
+
+source=~/src/XmlPretty
+if [ -d ${source} ]
+then
+ java -cp ${source} XmlPretty $*
+
+else
+ cat<<EOF>&2
+Missing source directory ${source}
+EOF
+ exit 1
+fi

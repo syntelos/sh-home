@@ -1,0 +1,88 @@
+#!/bin/bash
+
+function usage {
+    cat<<EOF>&2
+Usage
+    $0 <libs> <search>
+
+Description
+
+    Search javap output from each class found in the jars found via
+    libs.  
+
+    Each argument before 'search' is a jar file, or a directory
+    containing jar files.  Grep the javap output of each class in each
+    jar for the re 'search'.
+
+EOF
+    exit 1
+}
+
+tmpf=/tmp/tmp.$$
+
+if [ -n "${1}" ]&&[ -n "${2}" ]
+then
+    declare -a libs
+    unset search
+    cc=0
+    while [ -n "${1}" ]
+    do
+        arg="${1}"
+
+        shift
+
+        if [ -z "${1}" ]
+        then
+            search="${arg}"
+            break
+
+        elif [ -d "${arg}" ]
+        then
+            for jarf in $(2>/dev/null ls "${arg}"/*.jar )
+            do
+                libs[cc]="${jarf}"
+                cc=$(( $cc + 1 ))
+            done
+
+        elif [ -f "${arg}" ]
+        then
+            libs[cc]="${arg}"
+            cc=$(( $cc + 1 ))
+
+        else
+            search="${arg}"
+            break
+        fi
+    done
+
+    if [ 0 -lt "${#libs[@]}" ]&&[ -n "${search}" ]
+    then
+
+        for jarf in "${libs[@]}"
+        do
+            for class in $(unzip -l "${jarf}" | egrep '\.class$' | awk '{print $4}' | sed 's%/%.%g; s%\.class$%%')
+            do
+
+                if javap -public -classpath "${jarf}" "${class}" | egrep -e "${search}" > ${tmpf}
+                then
+
+                    if [ 0 -lt $(wc -l ${tmpf} | awk '{print $1}') ]
+                    then
+                        echo "${jarf} ${class}"
+                        cat -n ${tmpf}
+                    fi
+                fi
+
+            done
+        done
+
+        rm -f ${tmpf}
+        exit 0
+    else
+        usage
+    fi
+
+else
+    usage
+fi
+

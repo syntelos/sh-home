@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "$1" ]&&[ -f "$1" ]
+then
+    src=$1
+    tgt=$(echo ${src} | sed 's/\.go$/.6/')
+    if 6g ${src}
+    then
+        6l ${tgt}
+        if [ -f "6.out" ]
+        then
+            rm -f ${tgt}
+            tgt=$(echo $src | sed 's/\.go$//')
+            mv 6.out ${tgt}
+        fi
+    fi
+fi

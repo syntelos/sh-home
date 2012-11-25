@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ -d .svn ]
+then
+    svn status | egrep -e '^\?' | awk '{print $2}' | egrep -v '.d$'
+elif [ -d .git ]
+then
+    tmpf=/tmp/orps.$$
+
+    git status > ${tmpf}
+
+    lno=$(egrep -n 'Untracked files' ${tmpf} | egrep '^[0-9]' | sed 's/:.*//')
+
+    if [ -n "${lno}" ]
+    then
+        nhead=$(( ${lno} + 2 ))
+        lc=$(wc -l ${tmpf} | awk '{print $1}')
+        ntail=$(( ${lc} - ${nhead} ))
+        cat ${tmpf} | tail -n ${ntail} | awk '{print $2}'
+    fi
+    rm -f ${tmpf}
+fi

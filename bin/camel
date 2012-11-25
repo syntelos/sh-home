@@ -1,0 +1,18 @@
+#!/bin/bash
+
+function camilfy {
+    b=$(echo "${1}" | sed 's/.//')
+    a=$(echo "${1}" | sed "s%${b}%%" | tr '[a-z]' '[A-Z]')
+    echo "${a}${b}"
+}
+
+if [ -n "$1" ]
+then
+    for symbol in $*
+    do
+        echo $(camilfy "${symbol}")
+    done
+    exit 0
+else
+    exit 1
+fi

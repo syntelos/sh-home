@@ -1,0 +1,13 @@
+#!/bin/bash
+
+jalopy_home=/home/jdp/src/jalopy-1.0b11
+
+if [ -d ${jalopy_home} ]
+then
+ java -classpath $(ls ${jalopy_home}/lib/*.jar | tr '\n' ':') de.hunsicker.jalopy.plugin.console.ConsolePlugin $*
+else
+ cat<<EOF >&2
+Error, directory not found '${jalopy_home}'.
+EOF
+ exit 1
+fi

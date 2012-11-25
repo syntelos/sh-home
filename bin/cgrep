@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cat<<EOF
+-*- mode: compilation; default-directory: "$(pwd)" -*-
+
+EOF
+egrep -n $*

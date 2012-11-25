@@ -1,0 +1,47 @@
+#!/bin/bash
+
+tmpf=/tmp/$(basename $0).$$
+
+sp='%S%'
+
+function mimetype {
+    T=$1
+    shift
+    for file in $(files $* )
+    do
+	svn ps svn:mime-type ${T} "$(echo ${file} | sed 's^${sp}^ ^g' )"
+    done
+}
+function files {
+
+    for fext in $*
+    do
+	egrep "\.${fext}\$" ${tmpf} | sed 's^ ^${sp}^g'
+    done
+}
+
+if find . -type f > ${tmpf}
+then
+
+    mimetype application/x-java-archive "jar"
+    mimetype application/x-java-jnlp-file "jnlp"
+    mimetype text/plain "txt" "sh" "java" 'bas' 'BAS' 'h' 'c' "Makefile" 'ASM' 'LST' 'INC' 'A16' 'A17' 'FOR' 'csv' 'bat' 'xtm' 'map' 'lst'
+    mimetype application/x-3ds "3ds"
+    mimetype image/png "png"
+    mimetype image/jpeg "jpg" "jpeg"
+    mimetype image/gif "gif"
+    mimetype image/vnd.microsoft.bmp bmp "bmp"
+    mimetype image/vnd.microsoft.paint "psp"
+    mimetype application/pdf "pdf"
+    mimetype application/zip "zip"
+    mimetype application/octet-stream "HEX" 'COD' 'exe' 'EXE' 'hex'
+    mimetype image/svg+xml 'svg'
+    mimetype text/xml 'xml'
+
+    rm -f ${tmpf}
+else
+    cat<<EOF>&2
+Failed to create temp file.
+EOF
+    exit 1
+fi

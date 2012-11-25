@@ -1,0 +1,2 @@
+#!/bin/bash
+for each in * ; do echo $each; cd $each; 2>/dev/null madds | sed 's/^/    /'; cd ..; done

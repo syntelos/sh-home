@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# Check progress on platform independence between AWT and Android
+#
+
+tgt=''
+
+if [ -n "${1}" ]&&[ -d "${1}" ]
+then
+    tgt="${1}"
+else
+    cat<<EOF>&2
+Usage
+
+    $0 directory
+
+EOF
+    exit 1
+fi
+
+unset list
+
+for srcf in $(find ${tgt} -type f -name '*.java')
+do
+    for import in $(egrep '^import ' ${srcf} | egrep -v ' static ' | sed 's/import *//; s/;.*//; s/ //g;' )
+    do
+        list="${list} ${import}"
+    done
+done
+
+for m in ${list} ; do echo ${m}; done | sort -u

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+unset cp
+for file in $(2>/dev/null ls lib/*.jar)
+do
+ if [ -n "${cp}" ]
+ then
+  cp=${cp}:${file}
+ else
+  cp=${file}
+ fi
+done
+echo $cp

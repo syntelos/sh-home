@@ -1,0 +1,15 @@
+#!/bin/bash
+
+headn=$(git status | egrep -n '# Unmerged paths' | sed 's/:.*//')
+if [ -n "${headn}" ]
+then
+ flist=$(git status | egrep 'both modified:' | sed 's%.*:%%; s% %%g;' )
+ for file in $flist
+ do
+  echo $file
+ done
+ exit 0
+else
+ 1>&2 echo None
+ exit 1
+fi

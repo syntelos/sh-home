@@ -1,0 +1,4 @@
+#!/bin/bash
+
+svn status | egrep -e '^A.*\+' | awk '{print $3}'
+
