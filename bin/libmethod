@@ -40,8 +40,14 @@ then
         then
             for jarf in $(2>/dev/null ls "${arg}"/*.jar )
             do
-                libs[cc]="${jarf}"
-                cc=$(( $cc + 1 ))
+                # when 'for' can split the output of 'ls' on IFS,
+                # then 'jarf' won't be a file
+                #
+                if [ -f "${jarf}" ]
+                then
+                    libs[cc]="${jarf}"
+                    cc=$(( $cc + 1 ))
+                fi
             done
 
         elif [ -f "${arg}" ]
@@ -60,7 +66,7 @@ then
 
         for jarf in "${libs[@]}"
         do
-            for class in $(unzip -l "${jarf}" | egrep '\.class$' | awk '{print $4}' | sed 's%/%.%g; s%\.class$%%')
+            for class in $(2>/dev/null unzip -l "${jarf}" | egrep '\.class$' | awk '{print $4}' | sed 's%/%.%g; s%\.class$%%')
             do
 
                 if javap -public -classpath "${jarf}" "${class}" | egrep -e "${search}" > ${tmpf}
