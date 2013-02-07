@@ -1,13 +1,12 @@
 #!/bin/bash
 
-if [ -d .svn ]
-then
-    svn status | egrep -e '^\?' | awk '{print $2}' | egrep -v '.d$'
-elif [ -d .git ]
-then
-    tmpf=/tmp/orps.$$
+tmpf=/tmp/orps.$$
 
-    git status > ${tmpf}
+if 2>/dev/null svn status | egrep -e '^\?' | awk '{print $2}' | egrep -v '.d$'
+then
+    exit 0
+elif 2>/dev/null git status > ${tmpf}
+then
 
     lno=$(egrep -n 'Untracked files' ${tmpf} | egrep '^[0-9]' | sed 's/:.*//')
 

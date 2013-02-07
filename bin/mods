@@ -1,48 +1,36 @@
 #!/bin/bash
 
-tmpf=/tmp/tmp.$$
+tmpf=/tmp/mods.$$
 
 if rm -f ${tmpf}
 then
-    if [ -d '.svn' ]
+    if 2>/dev/null svn status > ${tmpf}
     then
-        if svn status > ${tmpf}
-        then
+
 	    for line in $( egrep -e '^M' ${tmpf} | awk '{print $2":"$3}')
 	    do
 	        case ${line} in
-		    \+:*)
-		        echo ${line} | sed 's/.*://'
-		        ;;
-		    :*)
-		        echo ${line} | sed 's/://'
-		        ;;
-		    *:)
-		        echo ${line} | sed 's/://'
-		        ;;
-		    *)
-		        echo ${line}
-		        ;;
+		        \+:*)
+		            echo ${line} | sed 's/.*://'
+		            ;;
+		        :*)
+		            echo ${line} | sed 's/://'
+		            ;;
+		        *:)
+		            echo ${line} | sed 's/://'
+		            ;;
+		        *)
+		            echo ${line}
+		            ;;
 	        esac
 	    done
+        rm -f ${tmpf}
 	    exit 0
-        else
-	    cat<<EOF >&2
-Error running subversion
-EOF
-	    exit 1
-        fi
-    elif [ -d '.git' ]
+
+    elif 2>/dev/null git status | grep modified | awk '{print $3}'
     then
-        if git status | grep modified | awk '{print $3}'
-        then
 	    exit 0
-        else
-	    cat<<EOF >&2
-Error running git
-EOF
-	    exit 1
-        fi
+
     fi
 
 else
