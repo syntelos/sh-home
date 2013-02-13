@@ -1,0 +1,127 @@
+#!/bin/bash
+
+conf=/etc/network/ipnat.conf
+
+function ipnat_usage {
+    cat<<EOF>&2
+Usage
+
+    $0 [start|stop|list]
+
+Description
+
+    Configure simple NAT for hosts and interfaces
+    listed in ${conf}
+
+Commands
+
+    start    -- perform NAT configuration 
+
+    stop     -- nop (kernel cleanup)
+
+    list     -- report configuration found in
+                ${conf}
+
+EOF
+    return 1
+}
+function ipnat_list {
+    for lin in $(egrep -v '^#' ${conf} | sed 's/ /%/g')
+    do
+	internal=$(echo $lin | awk -F '%' '{print $1}')
+	internif=$(echo $lin | awk -F '%' '{print $2}')
+	external=$(echo $lin | awk -F '%' '{print $3}')
+	externif=$(echo $lin | awk -F '%' '{print $4}')
+
+	if [ -n "${internal}" ]&&[ -n "${internif}" ]&&[ -n "${external}" ]&&[ -n "${externif}" ]
+	then
+	    echo "internal: ${internal}, if: ${internif}, external: ${external}, if: ${externif}"
+	fi
+
+    done
+    return 0
+}
+function ipnat_start {
+    for lin in $(egrep -v '^#' ${conf} | sed 's/ /%/g')
+    do
+	internal=$(echo $lin | awk -F '%' '{print $1}')
+	internif=$(echo $lin | awk -F '%' '{print $2}')
+	external=$(echo $lin | awk -F '%' '{print $3}')
+	externif=$(echo $lin | awk -F '%' '{print $4}')
+
+	if [ -n "${internal}" ]&&[ -n "${internif}" ]&&[ -n "${external}" ]&&[ -n "${externif}" ]
+	then
+
+	    echo "ip addr add ${external} dev ${externif}"
+	    if ip addr add ${external} dev ${externif}
+	    then
+
+		echo "iptables -t nat -A PREROUTING -j DNAT -d ${external} --to ${internal}"
+		if iptables -t nat -A PREROUTING -j DNAT -d ${external} --to ${internal}
+		then
+
+		    echo "iptables -t nat -A POSTROUTING -j SNAT -s ${internal} --to ${external}"
+		    if iptables -t nat -A POSTROUTING -j SNAT -s ${internal} --to ${external}
+		    then
+
+			echo "ip route flush cache"
+			if ip route flush cache
+			then
+			    return 0
+			else
+			    cat<<EOF>&2
+Error in 'ip route flush cache'
+EOF
+			    return 1
+			fi
+		    else
+			cat<<EOF>&2
+Error in 'iptables -t nat -A POSTROUTING -j SNAT -s ${internal} --to ${external}'
+EOF
+			return 1
+		    fi
+		else
+		    cat<<EOF>&2
+Error in 'iptables -t nat -A PREROUTING -j DNAT -d ${external} --to ${internal}'
+EOF
+		    return 1
+		fi
+	    else
+		cat<<EOF>&2
+Error in 'ip addr add ${external} dev ${externif}'
+EOF
+		return 1
+	    fi
+	fi
+    done
+}
+
+case "$1" in
+    list)
+	if ipnat_list
+	then
+	    exit 0
+	else
+	    exit 1
+	fi
+	;;
+    start)
+	if ipnat_start
+	then
+	    exit 0
+	else
+	    exit 1
+	fi
+	;;
+    stop)
+	exit 0
+	;;
+    *)
+	if ipnat_usage
+	then
+	    exit 0
+	else
+	    exit 1
+	fi
+	;;
+esac
