@@ -1,7 +1,7 @@
 #!/bin/bash
 
 jodedir=${HOME}/src/jode
-cp=$(find ${jodedir} -type f -name '*.jar' | egrep release | tr '\n' ':')
+#cp=$(find ${jodedir} -type f -name '*.jar' | egrep release | tr '\n' ':')
+cp=${jodedir}/jode-1.1.2-pre1.jar
 
-#echo java -cp ${cp} net.sf.jode.decompiler.Main
-exec java -cp ${cp} net.sf.jode.decompiler.Main $*
+exec java -cp ${cp} jode.decompiler.Main $*

@@ -4,7 +4,8 @@ tmpf=/tmp/mods.$$
 
 if rm -f ${tmpf}
 then
-    if 2>/dev/null svn status > ${tmpf}
+
+    if 2>/dev/null svn status > ${tmpf} &&[ 0 -lt "$(wc -l ${tmpf} | awk '{print $1}' )" ]
     then
 
 	    for line in $( egrep -e '^M' ${tmpf} | awk '{print $2":"$3}')
@@ -27,7 +28,7 @@ then
         rm -f ${tmpf}
 	    exit 0
 
-    elif 2>/dev/null git status | grep modified | awk '{print $3}'
+    elif 2>/dev/null git status | grep '^#.*modified:' | awk '{print $3}'
     then
 	    exit 0
 
