@@ -2,7 +2,7 @@
 
 tmpf=/tmp/orps.$$
 
-if 2>/dev/null svn status | egrep -e '^\?' | awk '{print $2}' | egrep -v '.d$'
+if 2>/dev/null svn status | egrep -e '^\?' | awk '{print $2}'
 then
     exit 0
 elif 2>/dev/null git status > ${tmpf}
