@@ -1,1 +1,5 @@
 alias gs='git status --porcelain'
+alias gdoc2latex='python ~/src/uid/gdoc-downloader/gdoc2latex.py'
+alias mvn='/usr/local/share/java/apache-maven-3.8.4/bin/mvn'
+alias gcloud='/opt/google/google-cloud-sdk/bin/gcloud'
+alias gsutil='/opt/google/google-cloud-sdk/bin/gsutil'

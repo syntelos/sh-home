@@ -21,7 +21,7 @@
 (setq tab-width 4)
 (setq tab-stop-list (number-sequence 4 200 4))
 ;
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/ethan-wspace/lisp")
+(add-to-list 'load-path "/home/jdp/src/glasserc/ethan-wspace/lisp")
 (require 'ethan-wspace)
 ;(global-ethan-wspace-mode 1)
 ; (ethan-wspace-clean-all-modes)
@@ -54,8 +54,8 @@
 
 (setq compile-command "ant")
 
-(add-to-list 'load-path "/home/jdp/src/go/misc/emacs" t)
-(require 'go-mode-load)
+;(add-to-list 'load-path "/home/jdp/src/go/misc/emacs" t)
+;(require 'go-mode-load)
 
 ;; Split windows in the (emacs-22) way
 (setq split-height-threshold nil)
