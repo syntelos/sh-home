@@ -52,7 +52,7 @@
 
 (put 'downcase-region 'disabled nil)
 
-(setq compile-command "ant")
+;(setq compile-command "ant")
 
 ;(add-to-list 'load-path "/home/jdp/src/go/misc/emacs" t)
 ;(require 'go-mode-load)
