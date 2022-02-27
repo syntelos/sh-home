@@ -1,21 +1,33 @@
 #!/bin/bash
 
-tmpf=/tmp/orps.$$
+function isgit {
 
-if 2>/dev/null svn status | egrep -e '^\?' | awk '{print $2}'
+    while true
+    do
+        if [ -d .git ]
+        then
+            return 0
+        else
+            if d=$(pwd) && cd .. && [ "${d}" != "${pwd}" ]
+            then
+                continue
+            else
+                return 1
+            fi
+        fi
+    done
+}
+
+if isgit && 2>/dev/null git status --porcelain | egrep '^(\?|.\?)' | awk '{print $2}'
+
+then
+
+    exit 0
+    
+elif 2>/dev/null svn status | egrep -e '^\?' | awk '{print $2}'
 then
     exit 0
-elif 2>/dev/null git status > ${tmpf}
-then
 
-    lno=$(egrep -n 'Untracked files' ${tmpf} | egrep '^[0-9]' | sed 's/:.*//')
-
-    if [ -n "${lno}" ]
-    then
-        nhead=$(( ${lno} + 2 ))
-        lc=$(wc -l ${tmpf} | awk '{print $1}')
-        ntail=$(( ${lc} - ${nhead} ))
-        cat ${tmpf} | tail -n ${ntail} | awk '{print $2}'
-    fi
-    rm -f ${tmpf}
+else
+    exit 1
 fi
