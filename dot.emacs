@@ -23,8 +23,9 @@
 ;
 (add-to-list 'load-path "/home/jdp/src/glasserc/ethan-wspace/lisp")
 (require 'ethan-wspace)
-;(global-ethan-wspace-mode 1)
-; (ethan-wspace-clean-all-modes)
+(global-ethan-wspace-mode 1)
+(ethan-wspace-clean-all-modes)
+(setq mode-require-final-newline nil)
 ;
 (autoload 'pic-basic-mode "pic-basic-mode" "Visual Basic mode." t)
 (setq auto-mode-alist (append '(("\\.\\(bas\\|BAS\\)$" .
@@ -40,6 +41,9 @@
 (autoload 'jmk-mode "jmk-mode" "JMK mode." t)
 (setq auto-mode-alist (append '(("\\.jmk$" .
                                  jmk-mode)) auto-mode-alist))
+;
+(global-set-key (kbd "M-q") 'fill-paragraph)
+(setq-default fill-column 60)
 ;
 (global-set-key (kbd "M-z") 'compile)
 (global-set-key (kbd "C-c l") 'goto-line)

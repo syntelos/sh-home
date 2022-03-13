@@ -1,12 +1,30 @@
 #!/bin/bash
 
-if 2>/dev/null svn status | egrep -e '^A' | sed 's/\+//' | awk '{print $2}'
-then
-    exit 0
+function isgit {
 
-elif 2>/dev/null git status | grep 'new file' | awk '{print $4}'
+    while true
+    do
+        if [ -d .git ]
+        then
+            return 0
+        else
+            if d=$(pwd) && cd .. && [ "${d}" != "${pwd}" ]
+            then
+                continue
+            else
+                return 1
+            fi
+        fi
+    done
+}
+
+if isgit && 2>/dev/null git status --porcelain | egrep '^(A|.A)' | awk '{print $2}'
 then
 	exit 0
+
+elif 2>/dev/null svn status | egrep -e '^A' | sed 's/\+//' | awk '{print $2}'
+then
+    exit 0
 
 else
     cat<<EOF>&2
