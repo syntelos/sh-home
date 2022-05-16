@@ -37,8 +37,10 @@ function submodule {
 
     if r=$(git submodule status | awk '{print $2}') && [ -n "${r}" ]
     then
-        echo "${r}"
-
+        for s in ${r}
+        do
+            echo "${s}"
+        done
         return 0
     else
         return 1
@@ -60,9 +62,13 @@ then
             ;;
 
         init)
-            while dir=$(submodule) && cd ${dir}
+            for dir in $(submodule)
             do
-                git submodule update --init
+                if pushd ${dir}
+                then
+                    git submodule update --init
+                    popd
+                fi
             done
             exit 0
             ;;
