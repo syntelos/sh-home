@@ -1,0 +1,232 @@
+#!/bin/bash
+
+function usage {
+    cat<<EOF>&2
+Synopsis
+
+	ietf {cite|read|open} {rfc|draft} {ref|get} <docid> <anchor>
+
+	ietf open <docid>
+
+	ietf search
+
+Description
+
+	Fetch DOC/TXT or BIB/XML from IETF.  Alternatively, print the
+	REF/URL.  
+
+	Alternatively, open a datatracker REF/URL to resolve the
+	<docid> version number of a draft.
+
+	Alternatively, open (search) the datatracker.
+
+EOF
+    exit 1
+}
+#
+#doctype 3GPP ANSI CCITT DOI FIPS IANA IEEE IETF Internet-Draft ISBN ISO ITU NIST OASIS PKCS W3C
+#getone https://bib.ietf.org/get-one/export/?doctype=${doctype}&docid=${docid}&format=bibxml
+#
+bib_url_draft_id="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.iab-%s.xml"
+bib_url_rfc_num="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.%04d.xml"
+
+txt_url_draft_id="https://www.ietf.org/archive/id/%s.txt"
+txt_url_rfc_num="https://www.rfc-editor.org/rfc/rfc%04d.txt"
+
+open_url="https://datatracker.ietf.org/doc/html/%s"
+search_url="https://datatracker.ietf.org/"
+
+function cite {
+    case "${type}" in
+	rfc)
+	    printf -v tgt "${anchor}-rfc%04d.xml" ${docid}
+	    ;;
+	draft)
+	    tgt="${anchor}-${docid}.xml"
+	    ;;
+    esac
+
+    case "${type}" in
+	rfc)
+	    printf -v src "${bib_url_rfc_num}" "${docid}"
+	    case "${object}" in
+		ref)
+		    echo "${src}"
+		    return 0
+		    ;;
+		get)
+		    if curl -o "${tgt}" "${src}"
+		    then
+			return 0
+		    else
+			return 1
+		    fi
+		    ;;
+		*)
+		    usage
+		    ;;
+	    esac
+	    ;;
+	draft)
+	    printf -v src "${bib_url_draft_id}" "${docid}"
+	    case "${object}" in
+		ref)
+		    echo "${src}"
+		    return 0
+		    ;;
+		get)
+		    if curl -o "${tgt}" "${src}"
+		    then
+			return 0
+		    else
+			return 1
+		    fi
+		    ;;
+		*)
+		    usage
+		    ;;
+	    esac
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+}
+
+function read {
+    case "${type}" in
+	rfc)
+	    printf -v tgt "${anchor}-rfc%04d.txt" ${docid}
+	    ;;
+	draft)
+	    tgt="${anchor}-${docid}.txt"
+	    ;;
+    esac
+
+    case "${type}" in
+	rfc)
+	    printf -v src "${txt_url_rfc_num}" "${docid}"
+	    case "${object}" in
+		ref)
+		    echo "${src}"
+		    return 0
+		    ;;
+		get)
+		    if curl -o "${tgt}" "${src}"
+		    then
+			return 0
+		    else
+			return 1
+		    fi
+		    ;;
+		*)
+		    usage
+		    ;;
+	    esac
+	    ;;
+	draft)
+	    printf -v src "${txt_url_draft_id}" "${docid}"
+	    case "${object}" in
+		ref)
+		    echo "${src}"
+		    return 0
+		    ;;
+		get)
+		    if curl -o "${tgt}" "${src}"
+		    then
+			return 0
+		    else
+			return 1
+		    fi
+		    ;;
+		*)
+		    usage
+		    ;;
+	    esac
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+}
+
+if [ 5 == $# ]
+then
+    verb="${1}"
+    type="${2}"
+    object="${3}"
+    docid="${4}"
+    anchor="${5}"
+
+    case "${verb}" in
+	open)
+	    printf -v src "${open_url}" "${docid}"
+	    if xdg-open "${src}"
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	cite)
+	    if cite
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	read)
+	    if read
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+
+elif [ 2 == $# ]
+then
+    verb="${1}"
+    docid="${2}"
+
+    case "${verb}" in
+	open)
+	    printf -v src "${open_url}" "${docid}"
+	    if xdg-open "${src}"
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+
+elif [ 1 == $# ]
+then
+    verb="${1}"
+
+    case "${verb}" in
+	search)
+	    printf -v src "${search_url}"
+	    if xdg-open "${src}"
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+else
+    usage
+fi

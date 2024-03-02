@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ -n "${1}" ]&&[ -f "${1}" ]
+then
+    src="${1}"
+    xre=$(dirname "${src}")
+    if [ -d "${xre}" ]
+    then
+	for tgt in $(find . -type f -name "syntelos.h" | egrep -ve "${xre}" )
+	do
+	    if cp -p ${src} ${tgt}
+	    then
+		echo "U ${tgt}"
+	    else
+		echo "X ${tgt}"
+		exit 1
+	    fi
+	done
+	exit 0
+    else
+	1>&2 echo "$0 error: directory not found '${xre}'."
+	exit 1
+    fi
+else
+    wc $(find . -type f -name syntelos.h ) | sed '$d'
+fi

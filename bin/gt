@@ -1,0 +1,6 @@
+#!/bin/bash
+for src in $(2>/dev/null cat ~/todo.txt)
+do
+	echo "# ${src}"
+	git -C ${src} status --porcelain -b
+done

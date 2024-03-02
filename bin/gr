@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for src in $(find $(pwd) -type d -name '.git' | sed 's%/\.git%%')
+do
+	echo "# ${src}"
+	git -C ${src} status --porcelain -b
+done

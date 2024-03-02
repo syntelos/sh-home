@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -f CMakeLists.txt ]
+then
+  rm -rf build
+  mkdir build
+  cmake -D CMAKE_C_COMPILER='clang' -D CMAKE_C_FLAGS:STRING='-g -ggdb' -S . -B build
+else
+  1>&2 echo "$0 error: missing CMakeLists.txt"
+  exit 1
+fi

@@ -1,0 +1,111 @@
+#!/bin/bash
+
+function usage {
+    cat<<EOF>&2
+Synopsis
+
+  module <name> list <src>
+  module <name> copy <tgt> <src>
+  module <name> sync <tgt> <src>
+
+Description
+
+  Process operator on module, e.g. "txt" for git package directory
+  identities <tgt> and <src>, e.g. 'c-pvg'.
+
+EOF
+}
+declare -g mod opr src tgt
+
+function list {
+    find . -type f -name "${mod}_*.c" -o -name "${mod}_*.h" -o -name "${mod}.c" -o -name "${mod}.h" | sed 's%^\./%%' | egrep "${src}"
+    return 0
+}
+
+function copy {
+    for src_file in $(list $* )
+    do
+	tgt_file=$(echo ${src_file} | sed "s%${src}%${tgt}%")
+	if cp -p ${src_file} ${tgt_file}
+	then
+	    git -C $(dirname ${tgt_file}) add $(basename ${tgt_file})
+	else
+	    echo "FAIL ${tgt_file} ${src_file}"
+	    return 1
+	fi
+    done
+    return 0
+}
+
+function sync {
+    for src_file in $(list $* )
+    do
+	tgt_file=$(echo ${src_file} | sed "s%${src}%${tgt}%")
+	if cmp -s ${src_file} ${tgt_file}
+	then
+	    key=$?
+	    if [ 0 -eq ${key} ]
+	    then
+		echo "OK ${tgt_file} ${src_file}"
+	    else
+		echo "NK ${tgt_file} ${src_file}"
+	    fi
+	else
+	    echo "FAIL ${tgt_file} ${src_file}"
+	    return 1
+	fi
+    done
+    return 0
+}
+
+if [ 2 -le $# ]
+then
+    mod=${1}
+    shift
+    opr=${1}
+    shift
+    case ${opr} in
+	copy)
+	    tgt="${1}"
+	    shift
+	    src="${1}"
+	    shift
+	    if copy $*
+	    then
+		git -C ${tgt} status --porcelain -b
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	list)
+	    src="${1}"
+	    shift
+	    if list $*
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	sync)
+	    tgt="${1}"
+	    shift
+	    src="${1}"
+	    shift
+	    if sync $*
+	    then
+		exit 0
+	    else
+		exit 1
+	    fi
+	    ;;
+	*)
+	    usage
+	    exit 1
+	    ;;
+    esac
+else
+    usage
+    exit 1
+fi

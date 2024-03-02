@@ -1,0 +1,102 @@
+#!/bin/bash
+prog=$(basename $0)
+
+function usage(){
+    cat<<EOF>&2
+Synopsis
+
+    ${prog} [keys|values|enumerate|count|create]
+
+Description
+
+    List keys, values, or files found in the membership of
+
+       ~/txt/*.txt.
+
+See also
+
+    file_datetime
+    datetime_file
+
+EOF
+    return 0
+}
+#
+# Index ~/txt/*.txt
+#
+declare -A list
+
+for src in $(2>/dev/null ls ~/txt/*.txt)
+do
+    base=$(basename ${src} .txt)
+    code=$(echo ${base} | sed 's/.*-//')
+    if [ -n "${base}" ]&&[ -n "${code}" ]&&[ "${base}" != "${code}" ]
+    then
+	list[${code}]=${src}
+    fi
+done
+
+function keys {
+    for key in ${!list[@]}
+    do
+	echo ${key}
+    done
+    return 0
+}
+
+function values {
+    for key in $(keys | sort )
+    do
+	val=${list[${key}]}
+	echo ${val}
+    done
+    return 0
+}
+
+function enumerate {
+    for file in $(values)
+    do
+	echo "# ${file}"
+	cat -n ${file}
+    done
+    return 0
+}
+
+function count {
+    for file in $(values)
+    do
+	echo "# ${file}"
+	wc ${file} | sed 's%^ *%%'
+    done
+    return 0
+}
+
+function create {
+    title="$*"
+    base=$(echo $* | sed 's/ /_/g;')
+    tgt=~/txt/${base}.txt
+    echo "${title}" > ${tgt}
+    if 2>/dev/null emacs -nw ${tgt} && file_datetime ${tgt}
+    then
+	rm -f ${tgt}~
+	return 0
+    else
+	return 1
+    fi
+}
+
+case "${1}" in
+    values)
+	values ;;
+    keys)
+	keys ;;
+    list|enum|enumerate)
+	enumerate ;;
+    count|wc)
+	count ;;
+    write|edit|create)
+	shift
+	create $* ;;
+    *)
+	usage ;;
+esac

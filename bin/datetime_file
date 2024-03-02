@@ -1,0 +1,36 @@
+#!/bin/bash
+prog=$(basename $0)
+
+if [ -n "${1}" ]&&[ -f "${1}" ]
+then
+    src="${1}"
+    code=$(basename ${src} | sed 's%.*-%%; s%\..*%%; s%_%%;')
+    case "${code}" in
+	[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
+	    code=$(echo ${code} | sed 's%..$%.&%')
+	    if touch -t ${code} ${src}
+	    then
+		ls -l ${src}
+		exit 0
+	    else
+		exit 1
+	    fi
+	    exit 0
+	;;
+	[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
+	    if touch -t ${code} ${src}
+	    then
+		ls -l ${src}
+		exit 0
+	    else
+		exit 1
+	    fi
+	;;
+    esac
+    cat<<EOF>&2
+${prog}: error: missing datetime code in '${1}'.
+EOF
+    exit 1
+else
+    exit 1
+fi

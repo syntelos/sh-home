@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -n "${1}" ]
+then
+    iso8601=$(echo ${1} | sed 's%\.000Z%Z%;')
+    date -d "${iso8601}" '+%Y%m%d_%H%M%S'
+    exit 0
+else
+    1>&2 echo "usage: instatime <datetime>"
+    exit 1
+fi

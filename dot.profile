@@ -1,7 +1,4 @@
 
-#umask 022
-
-# if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
     if [ -f "$HOME/.bashrc" ]; then
@@ -9,24 +6,34 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+
+SH_HOME=${HOME}/src/syntelos/sh-home/bin
+if [ -d "${SH_HOME}" ] ; then
+    PATH="${SH_HOME}:$PATH"
 fi
 
-export ANDROID_SDK=/opt/google/android_sdk
-if [ -d ${ANDROID_SDK} ]
-then
-    PATH=${PATH}:${ANDROID_SDK}/tools/bin
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
 fi
 
-export JAVA_HOME=/usr/java
-if [ -d ${JAVA_HOME} ]
-then
-    PATH=${PATH}:${JAVA_HOME}/bin
+export GOPATH=${HOME}/go
+export GOBIN=${GOPATH}/bin
+
+if [ -d "${GOBIN}" ] ; then
+    PATH="${PATH}:${GOBIN}"
 fi
 
-export EMSDK=/home/jdp/src/emscripten-core/emsdk
-if [ -d ${EMSDK} ]
+SHTEX=${HOME}/tex/sh-tex
+if [ -d ${SHTEX} ]
 then
-    . ${EMSDK}/emsdk_env.sh
+	PATH="${PATH}:${SHTEX}"
 fi
+
+export GOROOT=/usr/local/go
+
+if [ -d ${GOROOT} ]
+then
+	PATH="${PATH}:${GOROOT}/bin"
+fi
+
+export LD_LIBRARY_PATH=${HOME}/src/syntelos/c-mach-types/lib

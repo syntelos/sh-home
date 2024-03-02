@@ -1,0 +1,40 @@
+#!/bin/bash
+
+if [ -n "${1}" ]&&[ -f "${1}" ]
+then
+    src="${1}"
+    top=$(echo "${src}" | sed 's/\.[a-z]*//')
+    bot=$(echo "${src}" | sed "s%${top}%%")
+
+    code=$(date -r "${src}" '+%Y%m%d_%H%M%S')
+
+    if [ -z "$(basename "${top}" | egrep ${code} )" ]
+    then
+	tgt=${top}-${code}${bot}
+
+	if mv "${src}" "${tgt}"
+	then
+	    echo "${tgt}"
+	    exit 0
+	else
+	    exit 1
+	fi
+    else
+	echo "${src}"
+	exit 0
+    fi
+else
+    prog=$(basename $0)
+    cat<<EOF>&2
+Synopsis
+
+	$prog <file>
+
+Description
+
+	Rename filename with timestamp.  Echo filename with
+	timestamp.
+
+EOF
+    exit 1
+fi

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ -n "${1}" ]&&[ -d "${1}" ]
+then
+  src=$(basename ${1})
+  tgt=${src}-$(yyyymmdd_hhmmss).tgz
+  if tar cvfz /tmp/${tgt} ${src}
+  then
+    cp -p /tmp/${tgt} ~/private/sdcard/
+    echo ${tgt}
+    exit 0
+  else
+    exit 1
+  fi
+else
+  exit 1
+fi
