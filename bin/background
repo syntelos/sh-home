@@ -1,2 +1,0 @@
-#!/bin/bash
-gconftool --get /desktop/gnome/background/picture_filename

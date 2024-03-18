@@ -1,0 +1,5 @@
+#!/bin/bash
+export CC=$(which clang)
+export CFLAGS="-g -ggdb"
+./configure $*
+make

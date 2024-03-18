@@ -1,9 +1,0 @@
-#!/bin/bash
-
-if cd ~/src/ulsf/fun/Wallpaper
-then
- ./run.sh
-else
- echo "Wallpaper not found"
- exit 1
-fi

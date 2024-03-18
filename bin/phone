@@ -1,0 +1,123 @@
+#!/bin/bash
+
+abstraction=phone-$(yyyymmdd)
+
+location_source=/mnt/chromeos/removable/android
+location_target=/mnt/chromeos/removable/linux/${abstraction}
+location_intermediary=/tmp/${abstraction}
+
+
+function usage {
+    cat<<EOF>&2
+Synopsis
+
+    phone source
+
+    phone target
+
+    phone progress
+
+Description
+
+    First, "source" android SDCARD to intermediary.
+
+    Second, "target" intermediary to linux SDCARD.
+
+    Third, optionally monitor intermediary storage with "progress".
+
+Theory
+
+    A phone backup is a number a gigabytes, too big for a TGZ archive
+    -- according to experience.  Therefore, the individual file
+    staging is replicated across devices.
+
+EOF
+    exit 1
+}
+
+function source {
+    for src in $(find ${location_source} -type f | sed 's/ /%/g')
+    do
+	src=$(echo "${src}" | sed 's/%/ /g')
+	tgt=$(echo "${src}" | sed "s%${location_source}/%${location_intermediary}%")
+	if [ ! -f "${tgt}" ]
+	then
+	    dir=$(dirname "${tgt}")
+	    if [ ! -d "${dir}" ]
+	    then
+		mkdir -p "${dir}"
+	    fi
+
+	    if cp -p "${src}" "${tgt}"
+	    then
+		echo "${tgt}"
+	    else
+		echo error "${src}"
+		exit 1
+	    fi
+	else
+	    echo "${tgt}"
+	fi
+    done
+    exit 0
+}
+
+function target {
+    for src in $(find "${location_intermediary}" -type f | sed 's/ /%/g')
+    do
+	src=$(echo "${src}" | sed 's/%/ /g')
+	tgt=$(echo "${src}" | sed "s%^\./%${location_target}/%")
+	dir=$(dirname "${tgt}")
+	if [ ! -f "${tgt}" ]
+	then
+	    if [ ! -d "${dir}" ]
+	    then
+		if ! mkdir -p "${dir}"
+		then
+		    echo "error ${dir}"
+		    exit 1
+		fi
+	    fi
+
+	    if cp -p "${src}" "${tgt}"
+	    then
+		echo "${tgt}"
+	    else
+		echo "error ${src}"
+		exit 1
+	    fi
+	else
+	    echo "${tgt}"
+	fi
+    done
+    exit 0
+}
+
+function progress {
+    while sleep 1m
+    do
+	echo "$(hhmmss) $(disk)"
+    done
+    exit 0
+}
+
+if [ -n "${1}" ]
+then
+
+    case "${1}" in
+	source)
+	    source
+	    ;;
+	target)
+	    target
+	    ;;
+	progress)
+	    progress
+	    ;;
+	*)
+	    usage
+	    ;;
+    esac
+else
+    usage
+fi

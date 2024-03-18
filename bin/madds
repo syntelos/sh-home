@@ -1,4 +1,0 @@
-#!/bin/bash
-
-svn status | egrep -e '^(A|M)' | awk '{print $2}'
-

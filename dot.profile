@@ -36,4 +36,3 @@ then
 	PATH="${PATH}:${GOROOT}/bin"
 fi
 
-export LD_LIBRARY_PATH=${HOME}/src/syntelos/c-mach-types/lib
