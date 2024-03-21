@@ -8,13 +8,7 @@ then
     then
 	for tgt in $(find . -type f -name "syntelos.h" | egrep -ve "${xre}" )
 	do
-	    if cp -p ${src} ${tgt}
-	    then
-		echo "U ${tgt}"
-	    else
-		echo "X ${tgt}"
-		exit 1
-	    fi
+	    echo "${tgt}"
 	done
 	exit 0
     else

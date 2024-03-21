@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ "${1}" ]&&[ -f "${1}" ]
+then
+    asm="${1}"
+    bin=$(basename "${asm}" ".s")
+    obj="${bin}.o"
+
+    if clang -g -x ${asm}
+    then
+	if clang ${obj} -o ${bin}
+	then
+	    exit 0
+	else
+	    exit 1
+	fi
+    else
+	exit 1
+    fi
+else
+    cat<<EOF>&2
+Synopsis
+
+    cas <asm>
+
+Description
+
+    Produce binary from assembler via clang.
+
+EOF
+    exit 1
+fi

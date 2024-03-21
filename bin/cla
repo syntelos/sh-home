@@ -1,0 +1,27 @@
+#!/bin/bash
+
+if [ "${1}" ]&&[ -f "${1}" ]
+then
+    src="${1}"
+    bin=$(basename "${src}" ".c")
+    asm="${bin}.s"
+
+    if clang -g -c ${asm}
+    then
+	exit 0
+    else
+	exit 1
+    fi
+else
+    cat<<EOF>&2
+Synopsis
+
+    cla <src>
+
+Description
+
+    Produce assembler from C via clang.
+
+EOF
+    exit 1
+fi
