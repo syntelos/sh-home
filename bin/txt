@@ -1,12 +1,16 @@
 #!/bin/bash
-prog=$(basename $0)
-source=~/${prog}
+declare -g prog=$(basename $0)
+declare -g source=~/${prog}
+declare -A list
 
 function usage(){
     cat<<EOF>&2
 Synopsis
 
-    ${prog} [keys|values|enumerate|count|create]
+    ${prog} [keys|values]
+    ${prog} [list|enum|enumerate]
+    ${prog} [count|wc]
+    ${prog} [create|edit|write]
 
 Description
 
@@ -22,20 +26,6 @@ See also
 EOF
     return 0
 }
-#
-# Index ${source}/*.txt
-#
-declare -A list
-
-for src in $(2>/dev/null ls ${source}/*.txt)
-do
-    src_base=$(basename ${src} .txt)
-    src_code=$(echo ${src_base} | sed 's/.*-//')
-    if [ -n "${src_base}" ]&&[ -n "${src_code}" ]&&[ "${src_base}" != "${src_code}" ]
-    then
-	list[${src_code}]="${src}"
-    fi
-done
 
 function keys {
     for key in ${!list[@]}
@@ -85,12 +75,26 @@ function create {
 	return 1
     fi
 }
-
+#
+# (init)
+#
+for src in $(2>/dev/null ls ${source}/*.txt)
+do
+    src_base=$(basename ${src} .txt)
+    src_code=$(echo ${src_base} | sed 's/.*-//')
+    if [ -n "${src_base}" ]&&[ -n "${src_code}" ]&&[ "${src_base}" != "${src_code}" ]
+    then
+	list[${src_code}]="${src}"
+    fi
+done
+#
+# (main)
+#
 case "${1}" in
     values)
 	values ;;
     keys)
-	keys ;;
+	keys | sort ;;
     list|enum|enumerate)
 	enumerate ;;
     count|wc)
