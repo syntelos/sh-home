@@ -1,5 +1,6 @@
 #!/bin/bash
 prog=$(basename $0)
+source=~/${prog}
 
 function usage(){
     cat<<EOF>&2
@@ -11,7 +12,7 @@ Description
 
     List keys, values, or files found in the membership of
 
-       ~/txt/*.txt.
+       ${source}/*.txt.
 
 See also
 
@@ -22,24 +23,24 @@ EOF
     return 0
 }
 #
-# Index ~/txt/*.txt
+# Index ${source}/*.txt
 #
 declare -A list
 
-for src in $(2>/dev/null ls ~/txt/*.txt)
+for src in $(2>/dev/null ls ${source}/*.txt)
 do
-    base=$(basename ${src} .txt)
-    code=$(echo ${base} | sed 's/.*-//')
-    if [ -n "${base}" ]&&[ -n "${code}" ]&&[ "${base}" != "${code}" ]
+    src_base=$(basename ${src} .txt)
+    src_code=$(echo ${src_base} | sed 's/.*-//')
+    if [ -n "${src_base}" ]&&[ -n "${src_code}" ]&&[ "${src_base}" != "${src_code}" ]
     then
-	list[${code}]=${src}
+	list[${src_code}]="${src}"
     fi
 done
 
 function keys {
     for key in ${!list[@]}
     do
-	echo ${key}
+	echo "${key}"
     done
     return 0
 }
@@ -48,7 +49,7 @@ function values {
     for key in $(keys | sort )
     do
 	val=${list[${key}]}
-	echo ${val}
+	echo "${val}"
     done
     return 0
 }
@@ -57,7 +58,7 @@ function enumerate {
     for file in $(values)
     do
 	echo "# ${file}"
-	cat -n ${file}
+	cat -n "${file}"
     done
     return 0
 }
@@ -66,7 +67,7 @@ function count {
     for file in $(values)
     do
 	echo "# ${file}"
-	wc ${file} | sed 's%^ *%%'
+	wc "${file}" | sed 's%^ *%%'
     done
     return 0
 }
@@ -74,11 +75,11 @@ function count {
 function create {
     title="$*"
     base=$(echo $* | sed 's/ /_/g;')
-    tgt=~/txt/${base}.txt
-    echo "${title}" > ${tgt}
-    if 2>/dev/null emacs -nw ${tgt} && file_datetime ${tgt}
+    tgt=${source}/${base}.txt
+    echo "${title}" > "${tgt}"
+    if 2>/dev/null emacs -nw "${tgt}" && file_datetime "${tgt}"
     then
-	rm -f ${tgt}~
+	rm -f "${tgt}~"
 	return 0
     else
 	return 1
