@@ -31,7 +31,7 @@ bib_url_draft_id="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.iab-%s.x
 bib_url_rfc_num="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.%04d.xml"
 
 txt_url_draft_id="https://www.ietf.org/archive/id/%s.txt"
-txt_url_rfc_num="https://www.rfc-editor.org/rfc/rfc%04d.txt"
+txt_url_rfc_num="https://www.rfc-editor.org/rfc/rfc%d.txt"
 
 open_url="https://datatracker.ietf.org/doc/html/%s"
 search_url="https://datatracker.ietf.org/"
