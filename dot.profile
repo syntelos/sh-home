@@ -12,6 +12,11 @@ if [ -d "${SH_HOME}" ] ; then
     PATH="${SH_HOME}:$PATH"
 fi
 
+BIN_HOME=${HOME}/bin
+if [ -d "${BIN_HOME}" ] ; then
+    PATH="${BIN_HOME}:$PATH"
+fi
+
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
