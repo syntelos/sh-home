@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #define syntelos_mark 0x73796e74656c6f73
-#define fdin 0
-#define fdout 1
-#define fderr 2
+#define fd_in 0
+#define fd_out 1
+#define fd_err 2
 
 typedef uint64_t mark_t;
 typedef void* ptr_t;
@@ -34,25 +34,58 @@ int main(int argc, char **argv){
   int argx = 1;
   if (argx < argc){
     char *operand = argv[argx];
-    mark_t src = decompose(operand);
-    mark_t tgt = (src^syntelos_mark);
+    if (0 == strcmp("syntelos",operand)){
+      mark_t src = syntelos_mark;
+      argx += 1;
+      if (argx < argc){
+	char *operator = argv[argx];
+	if (0 == strcmp(operator,"bin")){
 
-    argx += 1;
-    if (argx < argc){
-      char *operator = argv[argx];
-      if (0 == strcmp(operator,"bin")){
+	  write(fd_out,&src,8);
+	}
+	else {
+	  fprintf(stdout,"0x%zX\n",src);
+	  return 0;
+	}
+      
+      }
+      else {
+	fprintf(stdout,"0x%zX\n",src);
+	return 0;
+      }
+    }
+    else {
+      mark_t syn = syntelos_mark;
+      mark_t src = decompose(operand);
+      mark_t tgt = (src+syn);
 
-	write(fdout,&tgt,8);
+      argx += 1;
+      if (argx < argc){
+	char *operator = argv[argx];
+	if (0 == strcmp(operator,"bin")){
+
+	  if (syn == src){
+	    write(fd_out,&src,8);
+	  }
+	  else {
+	    write(fd_out,&tgt,8);
+	  }
+	}
+	else {
+	  if (syn == src){
+	    fprintf(stdout,"0x%zX\n",src);
+	  }
+	  else {
+	    fprintf(stdout,"0x%zX\n",tgt);
+	  }
+	  return 0;
+	}
+      
       }
       else {
 	fprintf(stdout,"0x%zX\n",tgt);
 	return 0;
       }
-      
-    }
-    else {
-      fprintf(stdout,"0x%zX\n",tgt);
-      return 0;
     }
   }
   else {
