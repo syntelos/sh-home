@@ -5,3 +5,4 @@ alias eq="emacs -Q -nw --eval \"(setq frame-background-mode 'light)\""
 alias en="emacs -nw"
 alias gs="git status --porcelain -b"
 alias httpd='npx http-server'
+alias apple='eog ~/img/apple &'
