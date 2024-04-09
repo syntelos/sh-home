@@ -34,7 +34,7 @@ int main(int argc, char **argv){
   int argx = 1;
   if (argx < argc){
     char *operand = argv[argx];
-    if (0 == strcmp("syntelos",operand)){
+    if (0 == strcmp("syntelos",operand) || 0 == strcmp("device",operand)){
       mark_t src = syntelos_mark;
       argx += 1;
       if (argx < argc){
