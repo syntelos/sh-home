@@ -21,11 +21,17 @@ CCFLAGS := $(PORTABILITY) $(WARNINGS) $(DEBUG)
 
 LDFLAGS := 
 
+all: ~/bin/typedef ~/bin/mark sync
+
+~/bin/typedef: typedef.c
+	$(CC) $(CCFLAGS) -o $@ $< $(LDFLAGS) 
 
 ~/bin/mark: mark.c
 	$(CC) $(CCFLAGS) -o $@ $< $(LDFLAGS) 
 
-
 clean:
 	$(RM) ~/bin/*
+
+sync:
+	cp -p *.c ~/src/syntelos/c-machina/doc
 

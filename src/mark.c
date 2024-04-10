@@ -1,3 +1,7 @@
+/*
+ * syntelos type mark tool
+ * Copyright (C) 2024, John Pritchard, Syntelos
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
