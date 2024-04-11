@@ -1,0 +1,40 @@
+#!/bin/bash
+
+function usage {
+    cat<<EOF>&2
+Synopsis
+
+  $(basename $0) <tgt> <src>
+
+Description
+
+  Synchronize files in directories.
+
+EOF
+}
+
+if [ 2 -eq $# ]&&[ -d "${1}" ]&&[ -d "${2}" ]
+then
+    dir_tgt="${1}"
+    dir_src="${2}"
+
+    for fil_src in $(find "${dir_src}" -type f )
+    do
+	fil_tgt=$(echo ${fil_src} | sed "s%${dir_src}%${dir_tgt}%; s%//%/%g;")
+	if [ ! -f "${fil_tgt}" ]||[ "${fil_tgt}" -nt "${fil_src}" ]
+	then
+	    if cp -p "${fil_src}" "${fil_tgt}" && git -C "${dir_tgt}" add $(echo ${fil_tgt} | sed "s%${dir_tgt}/%%")
+	    then
+		echo "U ${fil_tgt}"
+	    else
+		echo "R ${fil_tgt}"
+	    fi
+	else
+	    echo "F ${fil_tgt}"
+	fi
+    done
+    exit 0
+else
+    usage
+    exit 1
+fi

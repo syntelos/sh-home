@@ -17,11 +17,11 @@ DEBUG := -g -ggdb
 #
 # STRUCTURE
 #
-CCFLAGS := $(PORTABILITY) $(WARNINGS) $(DEBUG)
+CCFLAGS := $(PORTABILITY) $(WARNINGS) $(DEBUG) -I.
 
 LDFLAGS := 
 
-all: ~/bin/typedef ~/bin/mark sync
+all: ~/bin/typedef ~/bin/mark ~/bin/endian
 
 ~/bin/typedef: typedef.c
 	$(CC) $(CCFLAGS) -o $@ $< $(LDFLAGS) 
@@ -29,9 +29,9 @@ all: ~/bin/typedef ~/bin/mark sync
 ~/bin/mark: mark.c
 	$(CC) $(CCFLAGS) -o $@ $< $(LDFLAGS) 
 
-clean:
-	$(RM) ~/bin/*
+~/bin/endian: endian.c
+	$(CC) $(CCFLAGS) -o $@ $< $(LDFLAGS) 
 
-sync:
-	cp -p *.c ~/src/syntelos/c-machina/doc
+clean:
+	$(RM) ~/bin/{typedef,mark,endian}
 

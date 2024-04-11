@@ -7,17 +7,49 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
-#define syntelos_mark 0x73796e74656c6f73
+#include "endian.h"
+
 #define fd_in 0
 #define fd_out 1
 #define fd_err 2
 
+typedef uint8_t char_t;
 typedef uint64_t mark_t;
 typedef void* ptr_t;
 
+mark_t syntelos_mark(){
+  char_t *begin = "syntelos";
+  char_t *end = (begin+8);
+  char_t *sp = begin;
+  mark_t mark = 0;
+
+  switch (endian()){
+  case endian_kind_be:{
+    mark_t *mp = &mark;
+
+    while (sp < end){
+
+      *mp++ = *sp++;
+    }
+    return mark;
+  }
+  case endian_kind_le:{
+    mark_t *mp = &mark;
+    mp += 8;
+    while (sp < end){
+
+      *mp-- = *sp++;
+    }
+    return mark;
+  }
+  default:
+    return mark;
+  }
+}
+
 mark_t decompose(char *arg){
   size_t len = strlen(arg);
-  mark_t src = syntelos_mark;
+  mark_t src = syntelos_mark();
   mark_t tgt = 0;
   char *sp = arg;
   char* tp = (char*)&tgt;
@@ -39,7 +71,7 @@ int main(int argc, char **argv){
   if (argx < argc){
     char *operand = argv[argx];
     if (0 == strcmp("syntelos",operand) || 0 == strcmp("device",operand)){
-      mark_t src = syntelos_mark;
+      mark_t src = syntelos_mark();
       argx += 1;
       if (argx < argc){
 	char *operator = argv[argx];
@@ -59,7 +91,7 @@ int main(int argc, char **argv){
       }
     }
     else {
-      mark_t syn = syntelos_mark;
+      mark_t syn = syntelos_mark();
       mark_t src = decompose(operand);
       mark_t tgt = (src+syn);
 
