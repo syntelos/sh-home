@@ -1,3 +1,7 @@
+#
+# syntelos common cpl tools
+# Copyright (C) 2024 John Pritchard, Syntelos
+#
 CC := $(shell which clang)
 #
 # [XOPEN:600 POSIX:200112L] SUSv3 / UNIX 03 / POSIX.1-2001 / XPG6
@@ -14,7 +18,10 @@ WARNINGS := -Wno-pointer-sign
 # REFLECTION
 #
 DEBUG := -g -ggdb
-ENDIAN := $(shell endian)
+#
+# N.B. Unnecessary to meet requirements.
+#
+ENDIAN := $(shell 2>/dev/null endian)
 #
 # STRUCTURE
 #
@@ -34,5 +41,5 @@ all: ~/bin/typedef ~/bin/mark ~/bin/endian
 	$(CC) $(CCFLAGS) -o $@ $< $(LDFLAGS) 
 
 clean:
-	$(RM) ~/bin/{typedef,mark,endian}
+	$(RM) ~/bin/typedef ~/bin/mark ~/bin/endian
 

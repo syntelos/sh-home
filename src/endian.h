@@ -1,5 +1,5 @@
 /*
- * syntelos endian dynamic
+ * syntelos host endian tool
  * Copyright (C) 2024, John Pritchard, Syntelos
  */
 #ifndef _endian_kind_h
