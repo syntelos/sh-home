@@ -14,10 +14,11 @@ WARNINGS := -Wno-pointer-sign
 # REFLECTION
 #
 DEBUG := -g -ggdb
+ENDIAN := $(shell endian)
 #
 # STRUCTURE
 #
-CCFLAGS := $(PORTABILITY) $(WARNINGS) $(DEBUG) -I.
+CCFLAGS := $(PORTABILITY) $(WARNINGS) $(DEBUG) -I. $(ENDIAN)
 
 LDFLAGS := 
 

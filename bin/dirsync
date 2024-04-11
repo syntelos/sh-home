@@ -21,7 +21,7 @@ then
     for fil_src in $(find "${dir_src}" -type f )
     do
 	fil_tgt=$(echo ${fil_src} | sed "s%${dir_src}%${dir_tgt}%; s%//%/%g;")
-	if [ ! -f "${fil_tgt}" ]||[ "${fil_tgt}" -nt "${fil_src}" ]
+	if [ ! -f "${fil_tgt}" ]||[ "${fil_src}" -nt "${fil_tgt}" ]
 	then
 	    if cp -p "${fil_src}" "${fil_tgt}" && git -C "${dir_tgt}" add $(echo ${fil_tgt} | sed "s%${dir_tgt}/%%")
 	    then

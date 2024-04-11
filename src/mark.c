@@ -18,33 +18,9 @@ typedef uint64_t mark_t;
 typedef void* ptr_t;
 
 mark_t syntelos_mark(){
-  char_t *begin = "syntelos";
-  char_t *end = (begin+8);
-  char_t *sp = begin;
-  mark_t mark = 0;
-
-  switch (endian()){
-  case endian_kind_be:{
-    mark_t *mp = &mark;
-
-    while (sp < end){
-
-      *mp++ = *sp++;
-    }
-    return mark;
-  }
-  case endian_kind_le:{
-    mark_t *mp = &mark;
-    mp += 8;
-    while (sp < end){
-
-      *mp-- = *sp++;
-    }
-    return mark;
-  }
-  default:
-    return mark;
-  }
+  endian64_t mark ;
+  memcpy(mark.data,"syntelos",8);
+  return mark.value;
 }
 
 mark_t decompose(char *arg){
