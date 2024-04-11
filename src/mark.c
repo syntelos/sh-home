@@ -23,81 +23,50 @@ mark_t syntelos_mark(){
   return mark.value;
 }
 
-mark_t decompose(char *arg){
-  size_t len = strlen(arg);
-  mark_t src = syntelos_mark();
-  mark_t tgt = 0;
-  char *sp = arg;
-  char* tp = (char*)&tgt;
-  char* zp = (char*)&src;
-  off_t idx;
-  for (idx = 0; idx < 8; idx++, tp++){
-    if (idx >= len){
-      *tp = *zp++;
+mark_t type_mark(char *arg){
+  if (0 == strcmp("device",arg)){
+
+    return syntelos_mark();
+  }
+  else {
+    size_t len = strlen(arg);
+    if (8 < len){
+      return 0;
     }
     else {
-      *tp = *sp++;
+      endian64_t mark ;
+      memcpy(mark.data,arg,len);
+      return mark.value;
     }
   }
-  return tgt;
 }
 
 int main(int argc, char **argv){
   int argx = 1;
   if (argx < argc){
     char *operand = argv[argx];
-    if (0 == strcmp("syntelos",operand) || 0 == strcmp("device",operand)){
-      mark_t src = syntelos_mark();
-      argx += 1;
-      if (argx < argc){
-	char *operator = argv[argx];
-	if (0 == strcmp(operator,"bin")){
+    mark_t syn = syntelos_mark();
+    mark_t src = type_mark(operand);
+    mark_t tgt = (syn*src); // maximal uniqueness as minimal collision rate
 
-	  write(fd_out,&src,8);
-	}
-	else {
-	  fprintf(stdout,"0x%zX\n",src);
-	  return 0;
-	}
-      
+    argx += 1;
+    if (argx < argc && 0 == strcmp(argv[argx],"bin")){
+
+      if (syn == src){
+	write(fd_out,&src,8);
       }
       else {
-	fprintf(stdout,"0x%zX\n",src);
-	return 0;
+	write(fd_out,&tgt,8);
       }
     }
     else {
-      mark_t syn = syntelos_mark();
-      mark_t src = decompose(operand);
-      mark_t tgt = (src+syn);
-
-      argx += 1;
-      if (argx < argc){
-	char *operator = argv[argx];
-	if (0 == strcmp(operator,"bin")){
-
-	  if (syn == src){
-	    write(fd_out,&src,8);
-	  }
-	  else {
-	    write(fd_out,&tgt,8);
-	  }
-	}
-	else {
-	  if (syn == src){
-	    fprintf(stdout,"0x%zX\n",src);
-	  }
-	  else {
-	    fprintf(stdout,"0x%zX\n",tgt);
-	  }
-	  return 0;
-	}
-      
+      if (syn == src){
+	fprintf(stdout,"0x%zX\n",src);
       }
       else {
 	fprintf(stdout,"0x%zX\n",tgt);
-	return 0;
       }
+      return 0;
     }
   }
   else {
