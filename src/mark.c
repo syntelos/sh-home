@@ -31,7 +31,30 @@ mark_t type_mark(char *arg){
   else {
     size_t len = strlen(arg);
     if (8 < len){
-      return 0;
+      mark_t re = 0;
+      {
+	char *src = arg;
+	size_t cnt = len;
+	endian64_t se;
+	char *tgt = se.data;
+	while (0 != cnt){
+	  if (8 < cnt){
+	    memcpy(tgt,src,8);
+	    cnt -= 8;
+	  }
+	  else {
+	    memset(tgt,0,8);
+	    memcpy(tgt,src,cnt); // (N.B. Agnostic.)
+	    cnt = 0;
+	  }
+
+	  if (0 == re)
+	    re = se.value;
+	  else
+	    re += se.value;
+	}
+      }
+      return re;
     }
     else {
       endian64_t mark ;
