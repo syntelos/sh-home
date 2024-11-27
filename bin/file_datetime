@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -n "${1}" ]&&[ -f "${1}" ]
-then
+while [ -n "${1}" ]&&[ -f "${1}" ]
+do
     src="${1}"
     top=$(echo "${src}" | sed 's/\.[a-z]*//')
     bot=$(echo "${src}" | sed "s%${top}%%")
@@ -23,18 +23,5 @@ then
 	echo "${src}"
 	exit 0
     fi
-else
-    prog=$(basename $0)
-    cat<<EOF>&2
-Synopsis
-
-	$prog <file>
-
-Description
-
-	Rename filename with timestamp.  Echo filename with
-	timestamp.
-
-EOF
-    exit 1
-fi
+    shift
+done

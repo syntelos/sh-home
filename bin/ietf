@@ -37,120 +37,130 @@ open_url="https://datatracker.ietf.org/doc/html/%s"
 search_url="https://datatracker.ietf.org/"
 
 function cite {
-    case "${type}" in
-	rfc)
-	    printf -v tgt "${anchor}-rfc%04d.xml" ${docid}
-	    ;;
-	draft)
-	    tgt="${anchor}-${docid}.xml"
-	    ;;
-    esac
+    if [ -n "${anchor}" ]
+    then
+	case "${type}" in
+	    rfc)
+		printf -v tgt "${anchor}-rfc%04d.xml" ${docid}
+		;;
+	    draft)
+		tgt="${anchor}-${docid}.xml"
+		;;
+	esac
 
-    case "${type}" in
-	rfc)
-	    printf -v src "${bib_url_rfc_num}" "${docid}"
-	    case "${object}" in
-		ref)
-		    echo "${src}"
-		    return 0
-		    ;;
-		get)
-		    if curl -o "${tgt}" "${src}"
-		    then
+	case "${type}" in
+	    rfc)
+		printf -v src "${bib_url_rfc_num}" "${docid}"
+		case "${object}" in
+		    ref)
+			echo "${src}"
 			return 0
-		    else
-			return 1
-		    fi
-		    ;;
-		*)
-		    usage
-		    ;;
-	    esac
-	    ;;
-	draft)
-	    printf -v src "${bib_url_draft_id}" "${docid}"
-	    case "${object}" in
-		ref)
-		    echo "${src}"
-		    return 0
-		    ;;
-		get)
-		    if curl -o "${tgt}" "${src}"
-		    then
+			;;
+		    get)
+			if curl -o "${tgt}" "${src}"
+			then
+			    return 0
+			else
+			    return 1
+			fi
+			;;
+		    *)
+			usage
+			;;
+		esac
+		;;
+	    draft)
+		printf -v src "${bib_url_draft_id}" "${docid}"
+		case "${object}" in
+		    ref)
+			echo "${src}"
 			return 0
-		    else
-			return 1
-		    fi
-		    ;;
-		*)
-		    usage
-		    ;;
-	    esac
-	    ;;
-	*)
-	    usage
-	    ;;
-    esac
+			;;
+		    get)
+			if curl -o "${tgt}" "${src}"
+			then
+			    return 0
+			else
+			    return 1
+			fi
+			;;
+		    *)
+			usage
+			;;
+		esac
+		;;
+	    *)
+		usage
+		;;
+	esac
+    else
+	return 1
+    fi
 }
 
 function read {
-    case "${type}" in
-	rfc)
-	    printf -v tgt "${anchor}-rfc%04d.txt" ${docid}
-	    ;;
-	draft)
-	    tgt="${anchor}-${docid}.txt"
-	    ;;
-    esac
+    if [ -n "${anchor}" ]
+    then
+	case "${type}" in
+	    rfc)
+		printf -v tgt "${anchor}-rfc%04d.txt" ${docid}
+		;;
+	    draft)
+		tgt="${anchor}-${docid}.txt"
+		;;
+	esac
 
-    case "${type}" in
-	rfc)
-	    printf -v src "${txt_url_rfc_num}" "${docid}"
-	    case "${object}" in
-		ref)
-		    echo "${src}"
-		    return 0
-		    ;;
-		get)
-		    if curl -o "${tgt}" "${src}"
-		    then
+	case "${type}" in
+	    rfc)
+		printf -v src "${txt_url_rfc_num}" "${docid}"
+		case "${object}" in
+		    ref)
+			echo "${src}"
 			return 0
-		    else
-			return 1
-		    fi
-		    ;;
-		*)
-		    usage
-		    ;;
-	    esac
-	    ;;
-	draft)
-	    printf -v src "${txt_url_draft_id}" "${docid}"
-	    case "${object}" in
-		ref)
-		    echo "${src}"
-		    return 0
-		    ;;
-		get)
-		    if curl -o "${tgt}" "${src}"
-		    then
+			;;
+		    get)
+			if curl -o "${tgt}" "${src}"
+			then
+			    return 0
+			else
+			    return 1
+			fi
+			;;
+		    *)
+			usage
+			;;
+		esac
+		;;
+	    draft)
+		printf -v src "${txt_url_draft_id}" "${docid}"
+		case "${object}" in
+		    ref)
+			echo "${src}"
 			return 0
-		    else
-			return 1
-		    fi
-		    ;;
-		*)
-		    usage
-		    ;;
-	    esac
-	    ;;
-	*)
-	    usage
-	    ;;
-    esac
+			;;
+		    get)
+			if curl -o "${tgt}" "${src}"
+			then
+			    return 0
+			else
+			    return 1
+			fi
+			;;
+		    *)
+			usage
+			;;
+		esac
+		;;
+	    *)
+		usage
+		;;
+	esac
+    else
+	return 1
+    fi
 }
 
-if [ 5 == $# ]
+if [ 4 == $# ]||[ 5 == $# ]
 then
     verb="${1}"
     type="${2}"
@@ -161,12 +171,19 @@ then
     case "${verb}" in
 	open)
 	    printf -v src "${open_url}" "${docid}"
-	    if xdg-open "${src}"
-	    then
-		exit 0
-	    else
-		exit 1
-	    fi
+	    case "${object}" in
+		ref)
+		    echo "${src}"
+		    ;;
+		get)
+		    if xdg-open "${src}"
+		    then
+			exit 0
+		    else
+			exit 1
+		    fi
+		    ;;
+	    esac
 	    ;;
 	cite)
 	    if cite

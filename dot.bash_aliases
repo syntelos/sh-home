@@ -6,3 +6,5 @@ alias en="emacs -nw"
 alias gs="git status --porcelain -b"
 alias httpd='npx http-server'
 alias apple='eog ~/img/apple &'
+alias view=evince
+alias commit='git commit -am'

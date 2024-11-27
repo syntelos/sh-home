@@ -17,8 +17,10 @@ if [ -d "${BIN_HOME}" ] ; then
     PATH="${BIN_HOME}:$PATH"
 fi
 
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
+SHTEX=${HOME}/tex/sh-tex
+if [ -d ${SHTEX} ]
+then
+	PATH="${PATH}:${SHTEX}"
 fi
 
 export GOPATH=${HOME}/go
@@ -28,16 +30,9 @@ if [ -d "${GOBIN}" ] ; then
     PATH="${PATH}:${GOBIN}"
 fi
 
-SHTEX=${HOME}/tex/sh-tex
-if [ -d ${SHTEX} ]
-then
-	PATH="${PATH}:${SHTEX}"
-fi
-
 export GOROOT=/usr/local/go
 
 if [ -d ${GOROOT} ]
 then
 	PATH="${PATH}:${GOROOT}/bin"
 fi
-
